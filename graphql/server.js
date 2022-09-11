@@ -12,8 +12,18 @@ mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.
 const typeDefs = gql`
 type Usuario{
     id: ID!
+    rut: String!
+    nombre: String!
+    apellido: String!
     email: String!
+    telefono: String!
     pass: String!
+    tipo: String!
+}
+
+type Paciente{
+    id: [Usuario]
+    recetas: [Receta]
 }
 
 type Alert{
@@ -28,6 +38,7 @@ input UsuarioInput{
 type Query {
     getUsuarios: [Usuario]
     getUsuario(id: ID!) : Usuario
+    getPacientes(id: ID!): Usuario
 }
 
 type Mutation{
@@ -37,7 +48,7 @@ type Mutation{
 }
 
 `;
-
+//CHEQUEAR IMPLEMENTACIÓN QUERY GETPACIENTES
 
 const resolvers = {
     Query: {
