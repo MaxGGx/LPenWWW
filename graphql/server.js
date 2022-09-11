@@ -26,6 +26,13 @@ type Paciente{
     recetas: [Receta]
 }
 
+type Receta{
+    id: ID!
+    Descripcion: String!
+    Entregado: Boolean!
+    FechaEmision: Date!
+}
+
 type Alert{
     message: String
 }
