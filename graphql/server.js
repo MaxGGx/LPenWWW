@@ -7,7 +7,7 @@ const {merge} = require("lodash");
 
 const Usuario = require("./models/usuario");
 
-mongoose.connect('mongodb+srv://MaxX_X:<password>@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
+mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
 
 const typeDefs = gql`
 type Usuario{
