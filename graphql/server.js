@@ -4,50 +4,15 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const {ApolloServer, gql} = require("apollo-server-express");
 const {merge} = require("lodash");
+const typeDefs = require("./types/types")
 
 const Usuario = require("./models/usuario");
+const MedicamentoReservado = require("./models/medicamentoReservado");
+const Receta = require("./models/receta");
+const Registro = require("./models/registro");
 
 mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
 
-const typeDefs = gql`
-type Usuario{
-    id: ID!
-    rut: String!
-    nombre: String!
-    apellido: String!
-    email: String!
-    telefono: String!
-    pass: String!
-    tipo: String!
-}
-
-type Paciente{
-    id: [Usuario]
-    recetas: [Receta]
-}
-
-type Alert{
-    message: String
-}
-
-input UsuarioInput{
-    email: String!
-    pass: String!
-}
-
-type Query {
-    getUsuarios: [Usuario]
-    getUsuario(id: ID!) : Usuario
-    getPacientes(id: ID!): Usuario
-}
-
-type Mutation{
-    addUsuario(input: UsuarioInput): Usuario
-    updateUsuario(id: ID!, input: UsuarioInput) : Usuario
-    deleteUsuario(id: ID!): Alert
-}
-
-`;
 //CHEQUEAR IMPLEMENTACIÓN QUERY GETPACIENTES
 
 const resolvers = {
