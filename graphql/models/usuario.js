@@ -1,6 +1,6 @@
-import {Schema, Types, model} from "mongoose";
+const mongoose = require('mongoose');
 
-const usuarioSchema = new Schema({
+const usuarioSchema = new mongoose.Schema({
     rut: String,
     nombre: String,
     apellido: String,
@@ -10,4 +10,4 @@ const usuarioSchema = new Schema({
     tipo : {type : String, enum: ["medico", "paciente", "farmaceutico"]}
 });
 
-module.exports = model('Usuario',usuarioSchema);
+module.exports = mongoose.model('Usuario',usuarioSchema);
