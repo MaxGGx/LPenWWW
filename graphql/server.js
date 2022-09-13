@@ -98,6 +98,111 @@ const resolvers = {
             return {
                 message: "Usuario eliminado"
             }
+        },
+        async addReceta(obj, {input}){
+            const receta = new Receta(input);
+            await receta.save();
+            return receta;
+        },
+        async updateReceta(obj, {id, input}){
+            const receta = await Receta.findByIdAndUpdate(id, input);
+            return receta;
+        },
+        async deleteReceta(obj, {id}){
+            await Receta.deleteOne({_id: id});
+            return {
+                message: "Receta eliminada"
+            }
+        },
+        async addMedico(obj, {input}){
+            const medico = new Medico(input);
+            await medico.save();
+            return medico;
+        },
+        async updateMedico(obj, {id, input}){
+            const medico = await Medico.findByIdAndUpdate(id, input);
+            return medico;
+        },
+        async deleteMedico(obj, {id}){
+            await Medico.deleteOne({_id: id});
+            return {
+                message: "Medico eliminado"
+            }
+        },
+        async addPaciente(obj, {input}){
+            const paciente = new Paciente(input);
+            await paciente.save();
+            return paciente;
+        },
+        async updatePaciente(obj, {id, input}){
+            const paciente = await Paciente.findByIdAndUpdate(id, input);
+            return paciente;
+        },
+        async deletePaciente(obj, {id}){
+            await Paciente.deleteOne({_id: id});
+            return {
+                message: "Paciente eliminado"
+            }
+        },
+        async addRegistro(obj, {input}){
+            const registro = new Registro(input);
+            await registro.save();
+            return registro;
+        },
+        async updateRegistro(obj, {id, input}){
+            const registro = await Registro.findByIdAndUpdate(id, input);
+            return registro;
+        },
+        async deleteRegistro(obj, {id}){
+            await Registro.deleteOne({_id: id});
+            return {
+                message: "Registro eliminado"
+            }
+        },
+        async addMerma(obj, {input}){
+            const merma = new Merma(input);
+            await merma.save();
+            return merma;
+        },
+        async updateMerma(obj, {id, input}){
+            const merma = await Merma.findByIdAndUpdate(id, input);
+            return merma;
+        },
+        async deleteMerma(obj, {id}){
+            await Merma.deleteOne({_id: id});
+            return {
+                message: "Merma eliminada"
+            }
+        },
+        async addContraindicacion(obj, {input}){
+            const contraindicacion = new Contraindicacion(input);
+            await contraindicacion.save();
+            return contraindicacion;
+        },
+        async updateContraindicacion(obj, {id, input}){
+            const contraindicacion = await Contraindicacion.findByIdAndUpdate(id, input);
+            return contraindicacion;
+        },
+        async deleteContraindicacion(obj, {id}){
+            await Contraindicacion.deleteOne({_id: id});
+            return {
+                message: "Contraindicacion eliminada"
+            }
+        },
+        async addMedicamentoReservado(obj, {input}){
+            const medicamentor = new MedicamentoReservado(input);
+            await medicamentor.save();
+            return medicamentor;
+        },
+        async updateMedicamentoReservado(obj, {id, input}){
+            const medicamentor = await MedicamentoReservado.findByIdAndUpdate(id, input);
+            return medicamentor;
+        },
+        async deleteMedicamentoReservado(obj, {id}){
+            await MedicamentoReservado.deleteOne({_id: id});
+            return {
+                message: "Medicamento en reserva eliminado"
+            }
         }
     }
 }
