@@ -6,10 +6,14 @@ const {ApolloServer, gql} = require("apollo-server-express");
 const {merge} = require("lodash");
 const typeDefs = require("./types/types")
 
-const Usuario = require("./models/usuario");
 const MedicamentoReservado = require("./models/medicamentoReservado");
 const Receta = require("./models/receta");
 const Registro = require("./models/registro");
+const Contraindicacion = require("./models/contraindicacion");
+const Merma = require("./models/medicamentoMerma");
+const Medico = require("./models/medico");
+const Farmaceutico = require("./models/farmaceutico");
+const Paciente = require("./models/paciente");
 
 mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
 
@@ -17,15 +21,7 @@ mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.
 
 const resolvers = {
     Query: {
-        async getUsuarios(obj){
-            const usuarios = await Usuario.find();
-            return usuarios;
-        },
-        async getUsuario(obj, {id}){
-            const usuario = await Usuario.findById(id);
-            return usuario;
-        },
-        async getReceta(obj){
+        async getRecetas(obj){
             const recetas= await Receta.find();
             return recetas
         },
@@ -33,7 +29,7 @@ const resolvers = {
             const recetas= await Receta.findById(id)
             return recetas
         },
-        async getMedico(obj){
+        async getMedicos(obj){
             const medicos= await Medico.find()
             return medicos
         },
@@ -41,7 +37,7 @@ const resolvers = {
             const medicos= await Medico.find(id)
             return medicos
         },
-        async getPaciente(obj){
+        async getPacientes(obj){
             const pacientes= await Paciente.find()
             return pacientes
         },
@@ -49,7 +45,7 @@ const resolvers = {
             const pacientes= await Paciente.findById(id)
             return pacientes
         },
-        async getRegistro(obj){
+        async getRegistros(obj){
             const registros= await Registro.find()
             return registros
         },
@@ -57,7 +53,7 @@ const resolvers = {
             const registros= await Registro.findById(id)
             return registros
         },
-        async getMerma(obj){
+        async getMermas(obj){
             const mermas= await Merma.find()
             return mermas
         },
@@ -65,7 +61,7 @@ const resolvers = {
             const mermas= await Merma.findById(id)
             return mermas
         },
-        async getContraindicacion(obj){
+        async getContraindicaciones(obj){
             const contraindicaciones= await Contraindicacion.find()
             return contraindicaciones
         },
@@ -73,7 +69,7 @@ const resolvers = {
             const contraindicaciones= await Contraindicacion.findById(id)
             return contraindicaciones
         },
-        async getMedicamentoReservado(obj){
+        async getMedicamentosReservados(obj){
             const medicamentosr= await MedicamentoReservado.find()
             return medicamentosr
         },
@@ -83,21 +79,6 @@ const resolvers = {
         }
     },
     Mutation: {
-        async addUsuario(obj, {input}){
-            const usuario = new Usuario(input);
-            await usuario.save();
-            return usuario;
-        },
-        async updateUsuario(obj, {id, input}){
-            const usuario = await Usuario.findByIdAndUpdate(id, input);
-            return usuario;
-        },
-        async deleteUsuario(obj, {id}){
-            await Usuario.deleteOne({_id: id});
-            return {
-                message: "Usuario eliminado"
-            }
-        },
         async addReceta(obj, {input}){
             const receta = new Receta(input);
             await receta.save();
@@ -126,6 +107,21 @@ const resolvers = {
             await Medico.deleteOne({_id: id});
             return {
                 message: "Medico eliminado"
+            }
+        },
+        async addFarmaceutico(obj, {input}){
+            const farmaceutico = new Farmaceutico(input);
+            await farmaceutico.save();
+            return farmaceutico;
+        },
+        async updateFarmaceutico(obj, {id, input}){
+            const farmaceutico = await Farmaceutico.findByIdAndUpdate(id, input);
+            return farmaceutico;
+        },
+        async deleteFarmaceutico(obj, {id}){
+            await Farmaceutico.deleteOne({_id: id});
+            return {
+                message: "Farmaceutico eliminado"
             }
         },
         async addPaciente(obj, {input}){

@@ -1,8 +1,8 @@
-import {Schema, Types, model} from "mongoose";
+const mongoose = require('mongoose');
 
-const contraindicacionSchema = new Schema({
-    medicamento: {type : Types.ObjectId, ref: "Medicamento"},
+const contraindicacionSchema = new mongoose.Schema({
+    medicamento: {type : mongoose.Types.ObjectId, ref: "Medicamento"},
     descripcion: String
 });
 
-module.exports = model("Contraindicacion", contraindicacionSchema);
+module.exports = mongoose.model("Contraindicacion", contraindicacionSchema);

@@ -7,7 +7,7 @@ const pacienteSchema = new mongoose.Schema({
     email: String,
     telefono: String,
     pass: String,
-    recetas :[{type: mongoose.Types.ObjectId, ref: 'Recetas'}]
+    registros :[{type: mongoose.Types.ObjectId, ref: 'Registro'}]
 });
 
-module.exports = mongoose.model("Paciente", pacienteSchema);
+module.exports = mongoose.model("Farmaceutico", pacienteSchema);

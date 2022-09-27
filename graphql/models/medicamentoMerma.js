@@ -1,7 +1,7 @@
-import {Schema, Types, model} from "mongoose";
+const mongoose = require('mongoose');
 
-const mermaSchema = new Schema({
-    medicamento: {type : Types.ObjectId, ref: "Medicamento"},
+const mermaSchema = new mongoose.Schema({
+    medicamento: {type : mongoose.Types.ObjectId, ref: "Medicamento"},
 });
 
-module.exports = model("Merma", mermaSchema);
+module.exports = mongoose.model("Merma", mermaSchema);

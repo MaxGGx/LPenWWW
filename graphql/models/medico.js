@@ -1,8 +1,13 @@
-import {Schema, Types, model} from "mongoose";
+const mongoose = require('mongoose');
 
-const medicoSchema = new Schema({
-    user: {type : Types.ObjectId, ref: "Usuario", unique: true,  index: true},
-    recetas :[{type: Types.ObjectId, ref: 'Receta'}]
+const medicoSchema = new mongoose.Schema({
+    rut: String,
+    nombre: String,
+    apellido: String,
+    email: String,
+    telefono: String,
+    pass: String,
+    recetas :[{type: mongoose.Types.ObjectId, ref: 'Receta'}]
 });
 
-module.exports = model("Medico", medicoSchema);
+module.exports = mongoose.model("Medico", medicoSchema);
