@@ -37,6 +37,7 @@ type Paciente{
 
 type MedicamentoStock{
     id: ID!
+    nombre: String!
     codigo: String!
     descripcion: String!
     caducidad: String!
@@ -51,6 +52,7 @@ type Receta{
     descripcion: String!
     entregado: Boolean!
     fechaEmision: String!
+    periodosRetiro: [String]
 }
 
 type MedicamentoReservado{
@@ -87,8 +89,10 @@ type Alert{
 }
 
 type Query {
+    getMedicamentosStock: [MedicamentoStock]
+    getMedicamentoStock(id: ID!): MedicamentoStock
     getRecetas: [Receta]
-    getReceta(id: ID!): [Receta]
+    getReceta(id: ID!): Receta
     getMedicos: [Medico]
     getMedico(id: ID!): Medico
     getPacientes: [Paciente]
@@ -103,12 +107,22 @@ type Query {
     getMedicamentoReservado(id: ID!): MedicamentoReservado
 }
 
+input MedicamentoStockInput{
+    nombre: String!
+    codigo: String!
+    descripcion: String!
+    caducidad: String!
+    fechaingreso: String!
+    partida: String!
+}
+
 input RecetaInput{
     medico: String!
     remedios: [String]!
     descripcion: String!
     entregado: Boolean!
     fechaEmision: String!
+    periodosRetiro: [String]
 }
 
 input MedicoInput {
@@ -169,6 +183,9 @@ input FarmaceuticoInput{
 
 
 type Mutation{
+    addMedicamentoStock(input: MedicamentoStockInput): MedicamentoStock
+    updateMedicamentoStock(id: ID!, input: MedicamentoStockInput) : MedicamentoStock
+    deleteMedicamentoStock(id: ID!): Alert
     addReceta(input: RecetaInput): Receta
     updateReceta(id: ID!, input: RecetaInput) : Receta
     deleteReceta(id: ID!): Alert

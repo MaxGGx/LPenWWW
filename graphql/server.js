@@ -14,6 +14,7 @@ const Merma = require("./models/medicamentoMerma");
 const Medico = require("./models/medico");
 const Farmaceutico = require("./models/farmaceutico");
 const Paciente = require("./models/paciente");
+const MedicamentoStock = require("./models/medicamentoStock");
 
 mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
 
@@ -21,6 +22,14 @@ mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.
 
 const resolvers = {
     Query: {
+        async getMedicamentosStock(obj){
+            const medicamentos= await MedicamentoStock.find();
+            return medicamentos
+        },
+        async getMedicamentoStock(obj,{id}){
+            const medicamentos= await MedicamentoStock.findById(id)
+            return medicamentos
+        },
         async getRecetas(obj){
             const recetas= await Receta.find();
             return recetas
@@ -79,6 +88,21 @@ const resolvers = {
         }
     },
     Mutation: {
+        async addMedicamentoStock(obj, {input}){
+            const medicamentoStock = new MedicamentoStock(input);
+            await medicamentoStock.save();
+            return medicamentoStock;
+        },
+        async updateMedicamentoStock(obj, {id, input}){
+            const medicamentoStock = await MedicamentoStock.findByIdAndUpdate(id, input);
+            return medicamentoStock;
+        },
+        async deleteMedicamentoStock(obj, {id}){
+            await MedicamentoStock.deleteOne({_id: id});
+            return {
+                message: "MedicamentoStock eliminado"
+            }
+        },
         async addReceta(obj, {input}){
             const receta = new Receta(input);
             await receta.save();
@@ -198,7 +222,27 @@ const resolvers = {
             return {
                 message: "Medicamento en reserva eliminado"
             }
+        },
+        /*
+        QUEDA CASI LISTA, HAY QUE CONSULTAR CON EL PROFE PORQUE NO DEJA IMPORTAR NODEMAILER NI
+        CREAR EL TRIGGER...
+        async makeRecordatorioRecetas(){
+            recetas = getRecetas()
+            const date = new Date();
+            let day = date.getDate();
+            let month = date.getMonth() + 1;
+            let year = date.getFullYear();
+            let currentDate = `${day}-${month}-${year}`;
+            for(let i = 0; i<recetas.length; i++){
+                recetas[i].periodosRetiro
+                for(let j = 0; j<recetas[i].periodosRetiro; j++){
+                    if(recetas[i].periodosRetiro[j][0].split(":") == currentDate){
+                        //Enviar aviso con nodemailer
+                    }
+                }
+            }
         }
+        */
     }
 }
 
