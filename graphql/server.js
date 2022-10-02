@@ -5,6 +5,7 @@ const cors = require("cors");
 const {ApolloServer, gql} = require("apollo-server-express");
 const {merge} = require("lodash");
 const typeDefs = require("./types/types")
+const JWT = require('jsonwebtoken');
 
 const MedicamentoReservado = require("./models/medicamentoReservado");
 const Receta = require("./models/receta");
@@ -85,6 +86,33 @@ const resolvers = {
         async getMedicamentoReservado(obj,{id}){
             const medicamentosr= await MedicamentoReservado.findById(id)
             return medicamentosr
+        },
+
+        async login(obj,{email, pass, tipo}){
+            let user = null;
+            switch (tipo) {
+                case "medico":
+                    user = await Medico.findOne({email: email});
+                    break;
+                case "paciente":
+                    user = await Paciente.findOne({email: email});
+                    break;
+                case "farmaceutico":
+                    user = await Farmaceutico.findOne({email: email});
+                    break;    
+                default:
+                    break;
+            }
+            if(!user){
+                throw new Error(tipo + ' con correo ' + email + 'no existe.');
+            }
+            if(pass != user.pass){
+                throw new Error('Contraseña incorrecta.');
+            }
+            const token = JWT.sign({userId: user.id, email: user.email}, 'clavesupersecreta', {
+                expiresIn: '1h'
+            });
+            return {userId: user.id, token: token, tokenExpiration: 1}
         }
     },
     Mutation: {

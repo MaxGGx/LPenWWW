@@ -88,6 +88,12 @@ type Alert{
     message: String
 }
 
+type AuthData {
+    userId: ID!
+    token: String!
+    tokenExpiration: Int!
+}
+
 type Query {
     getMedicamentosStock: [MedicamentoStock]
     getMedicamentoStock(id: ID!): MedicamentoStock
@@ -105,6 +111,8 @@ type Query {
     getContraindicacion(id: ID!): Contraindicacion
     getMedicamentosReservados: [MedicamentoReservado]
     getMedicamentoReservado(id: ID!): MedicamentoReservado
+
+    login(email: String!, pass: String!, tipo: String!): AuthData!
 }
 
 input MedicamentoStockInput{
