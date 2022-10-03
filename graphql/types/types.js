@@ -113,6 +113,7 @@ type Query {
     getMedicamentoReservado(id: ID!): MedicamentoReservado
 
     login(email: String!, pass: String!, tipo: String!): AuthData!
+    getReservados(nombre: String!): [Int!]
 }
 
 input MedicamentoStockInput{
@@ -213,6 +214,10 @@ type Mutation{
     updateContraindicacion(id: ID!, input: ContraindicacionInput) : Contraindicacion
     deleteContraindicacion(id: ID!): Alert
     addMedicamentoReservado(input: MedicamentoReservadoInput): MedicamentoReservado
+
+    addLoteMedicamentos(datos_medicamento: MedicamentoReservadoInput, cantidad: Int!) : [MedicamentoReservado]
+    assignReservaMedicamento()
+
     updateMedicamentoReservado(id: ID!, input: MedicamentoReservadoInput) : MedicamentoReservado
     deleteMedicamentoReservado(id: ID!): Alert
     addFarmaceutico(input: FarmaceuticoInput): Farmaceutico

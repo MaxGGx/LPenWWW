@@ -113,6 +113,11 @@ const resolvers = {
                 expiresIn: '1h'
             });
             return {userId: user.id, token: token, tokenExpiration: 1}
+        },
+
+        async getReservados(obj, {nombre_medicamento}){
+            const IDs = await MedicamentoReservado.find({nombre: nombre_medicamento, available: 0});
+            return IDs;
         }
     },
     Mutation: {
@@ -241,6 +246,21 @@ const resolvers = {
             await medicamentor.save();
             return medicamentor;
         },
+
+        async addLoteMedicamentos(obj, {datos_medicamento, cantidad}){
+            for (let step = 0; step < cantidad; step++) {
+                this.addMedicamentoStock(datos_medicamento);
+            }
+            const reservas = await this.getReservados(datos_medicamento.nombre);
+            datos_medicamento["available"] = 0;
+            let disponibles = cantidad;
+            for(let id of reservas){
+                this.updateMedicamentoReservado(id, datos_medicamento);
+                disponibles--
+                if (!disponibles) break;
+            }
+        },
+
         async updateMedicamentoReservado(obj, {id, input}){
             const medicamentor = await MedicamentoReservado.findByIdAndUpdate(id, input);
             return medicamentor;
