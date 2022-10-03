@@ -15,6 +15,7 @@ const Medico = require("./models/medico");
 const Farmaceutico = require("./models/farmaceutico");
 const Paciente = require("./models/paciente");
 const MedicamentoStock = require("./models/medicamentoStock");
+const medicamentoMerma = require("./models/medicamentoMerma");
 
 mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
 
@@ -222,6 +223,46 @@ const resolvers = {
             return {
                 message: "Medicamento en reserva eliminado"
             }
+        },
+        async caducarMedicamento(obj, {id, razon}){
+            try {
+                const medicamento = await MedicamentoStock.findById(id);
+                const newMedicamento = {
+                    nombre: medicamento.nombre,
+                    codigo: medicamento.codigo,
+                    descripcion: razon,
+                    caducidad: medicamento.caducidad,
+                    fechaingreso: medicamento.fechaingreso,
+                    partida: medicamento.partida,
+                }
+                const merma = new medicamentoMerma(newMedicamento)
+                await merma.save();
+                await medicamento.deleteOne({_id: id});
+                return {
+                    message: "Medicamento satisfactoriamente marcado como Merma."
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            
+        },
+        async filtrarMedicamentos(obj, {id_list}){
+            try {
+                for (let i = 0; i < id_list.length; i++) {
+                    const id_medicamento = array[i];
+                    const medicamento = await MedicamentoStock.findById(id_medicamento);
+                    const expirationDate = new Date(medicamento.caducidad);
+                    if (expirationDate.getTime() >= Date.now().getTime()){
+                        await this.caducarMedicamento({}, {id, razon: 'caduco'})
+                    }
+                }
+                return {
+                    message: "Medicamentos filtrados satisfactoriamente."
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            
         },
         /*
         QUEDA CASI LISTA, HAY QUE CONSULTAR CON EL PROFE PORQUE NO DEJA IMPORTAR NODEMAILER NI

@@ -181,6 +181,13 @@ input FarmaceuticoInput{
     registros: [String]
 }
 
+input CaducarMedicamentoInput{
+    id: String!
+    razon: String!
+}
+input FiltrarMedicamentosInput{
+    id: [String!]!
+}
 
 type Mutation{
     addMedicamentoStock(input: MedicamentoStockInput): MedicamentoStock
@@ -210,6 +217,8 @@ type Mutation{
     addFarmaceutico(input: FarmaceuticoInput): Farmaceutico
     updateFarmaceutico(id: ID!, input: FarmaceuticoInput) : Farmaceutico
     deleteFarmaceutico(id: ID!): Alert
+    caducarMedicamento(input: CaducarMedicamentoInput) : Alert
+    filtrarMedicamentos(input: FiltrarMedicamentosInput) : Alert
 }
 
 `;
