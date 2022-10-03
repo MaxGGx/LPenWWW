@@ -216,7 +216,7 @@ type Mutation{
     addMedicamentoReservado(input: MedicamentoReservadoInput): MedicamentoReservado
 
     addLoteMedicamentos(datos_medicamento: MedicamentoReservadoInput, cantidad: Int!) : [MedicamentoReservado]
-    assignReservaMedicamento()
+    assignReservaMedicamento(objeto_medicamento: , id_medicamento_reservado: Int!)
 
     updateMedicamentoReservado(id: ID!, input: MedicamentoReservadoInput) : MedicamentoReservado
     deleteMedicamentoReservado(id: ID!): Alert
