@@ -88,6 +88,12 @@ type Alert{
     message: String
 }
 
+type AuthData {
+    userId: ID!
+    token: String!
+    tokenExpiration: Int!
+}
+
 type Query {
     getMedicamentosStock: [MedicamentoStock]
     getMedicamentoStock(id: ID!): MedicamentoStock
@@ -105,6 +111,9 @@ type Query {
     getContraindicacion(id: ID!): Contraindicacion
     getMedicamentosReservados: [MedicamentoReservado]
     getMedicamentoReservado(id: ID!): MedicamentoReservado
+
+    login(email: String!, pass: String!, tipo: String!): AuthData!
+    getReservados(nombre: String!): [Int!]
 }
 
 input MedicamentoStockInput{
@@ -213,6 +222,10 @@ type Mutation{
     updateContraindicacion(id: ID!, input: ContraindicacionInput) : Contraindicacion
     deleteContraindicacion(id: ID!): Alert
     addMedicamentoReservado(input: MedicamentoReservadoInput): MedicamentoReservado
+
+    addLoteMedicamentos(datos_medicamento: MedicamentoReservadoInput, cantidad: Int!) : [MedicamentoReservado]
+    assignReservaMedicamento(objeto_medicamento: MedicamentoStockInput, id_medicamento_reservado: Int!) : Int!
+
     updateMedicamentoReservado(id: ID!, input: MedicamentoReservadoInput) : MedicamentoReservado
     deleteMedicamentoReservado(id: ID!): Alert
     addFarmaceutico(input: FarmaceuticoInput): Farmaceutico

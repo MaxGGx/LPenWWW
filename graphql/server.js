@@ -5,6 +5,7 @@ const cors = require("cors");
 const {ApolloServer, gql} = require("apollo-server-express");
 const {merge} = require("lodash");
 const typeDefs = require("./types/types")
+const JWT = require('jsonwebtoken');
 
 const MedicamentoReservado = require("./models/medicamentoReservado");
 const Receta = require("./models/receta");
@@ -86,6 +87,38 @@ const resolvers = {
         async getMedicamentoReservado(obj,{id}){
             const medicamentosr= await MedicamentoReservado.findById(id)
             return medicamentosr
+        },
+
+        async login(obj,{email, pass, tipo}){
+            let user = null;
+            switch (tipo) {
+                case "medico":
+                    user = await Medico.findOne({email: email});
+                    break;
+                case "paciente":
+                    user = await Paciente.findOne({email: email});
+                    break;
+                case "farmaceutico":
+                    user = await Farmaceutico.findOne({email: email});
+                    break;    
+                default:
+                    break;
+            }
+            if(!user){
+                throw new Error(tipo + ' con correo ' + email + 'no existe.');
+            }
+            if(pass != user.pass){
+                throw new Error('Contraseña incorrecta.');
+            }
+            const token = JWT.sign({userId: user.id, email: user.email}, 'clavesupersecreta', {
+                expiresIn: '1h'
+            });
+            return {userId: user.id, token: token, tokenExpiration: 1}
+        },
+
+        async getReservados(obj, {nombre_medicamento}){
+            const IDs = await MedicamentoReservado.find({nombre: nombre_medicamento, available: 0});
+            return IDs;
         }
     },
     Mutation: {
@@ -214,6 +247,21 @@ const resolvers = {
             await medicamentor.save();
             return medicamentor;
         },
+
+        async addLoteMedicamentos(obj, {datos_medicamento, cantidad}){
+            for (let step = 0; step < cantidad; step++) {
+                this.addMedicamentoStock(datos_medicamento);
+            }
+            const reservas = await this.getReservados(datos_medicamento.nombre);
+            datos_medicamento["available"] = 0;
+            let disponibles = cantidad;
+            for(let id of reservas){
+                this.updateMedicamentoReservado(id, datos_medicamento);
+                disponibles--
+                if (!disponibles) break;
+            }
+        },
+
         async updateMedicamentoReservado(obj, {id, input}){
             const medicamentor = await MedicamentoReservado.findByIdAndUpdate(id, input);
             return medicamentor;
