@@ -5,6 +5,7 @@ const registroSchema = new mongoose.Schema({
     rutRetira: String,
     receta: {type: mongoose.Types.ObjectId, ref: 'Receta'},
     fechaRetiro: String,
+    medicamentosRechazados:[String]
 });
 
 module.exports = mongoose.model('Registro',registroSchema);

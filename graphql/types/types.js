@@ -158,6 +158,7 @@ input RegistroInput {
     rutRetira: String!
     receta: String!
     fechaRetiro: String
+    medicamentosRechazados:[String]!
 }
 
 input MermaInput{
