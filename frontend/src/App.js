@@ -1,14 +1,29 @@
 import React from 'react';
-import Drawer from './components/Drawer'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from 'react-router-dom';
+import Layout from './layout/Layout';
+import Prescripciones from  './components/Prescripciones'
+import Stock from './components/Stock';
 
-class App extends React.Component {
-  render(){
-    return (
-      <div className="App">
-        <Drawer/>
-      </div>
-    );
-  }
+
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route element={<Outlet />} >
+          <Route element={<Layout />}>
+            <Route path="/" />
+            <Route path="/prescripciones" element={<Prescripciones />} />
+            <Route path="/stock" element={<Stock />} />
+          </Route>
+        </Route>
+      </Routes>
+    </Router>
+  )
 }
 
 export default App;
