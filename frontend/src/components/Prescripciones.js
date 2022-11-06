@@ -16,23 +16,8 @@ import PropTypes from 'prop-types'
 import DescriptionIcon from '@mui/icons-material/Description';
 import Button from '@mui/material/Button';
 import BasicModal from './modalPrescripciones';
+import prescripciones from '../mocking/data_prescripciones';
 
-function createData(name_prescripcion, nombrePaciente, rutPaciente, descripcion ,id_prescripcion){
-  return{
-    name_prescripcion,
-    nombrePaciente,
-    rutPaciente,
-    descripcion,
-    //Usar id prescripcion para obtener los medicamentos
-    medicamentos:[
-      {
-        nombre_medicamento: 'Paracetamol',
-        id_medicamento: "111222333",
-        cantidad: "500"
-      }
-    ]
-  }
-}
 
 function Row(props){
   const { row } = props;
@@ -49,13 +34,8 @@ function Row(props){
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        {
-        //<TableCell>
-        //  <DescriptionIcon>DescriptionIcon</DescriptionIcon>
-        //</TableCell>
-        }
         <TableCell scope="row">
-          {row.name_prescripcion}
+        <DescriptionIcon>DescriptionIcon</DescriptionIcon> {row.name_prescripcion}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -86,8 +66,8 @@ function Row(props){
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.medicamentos.map((medicamentoRow) => (
-                    <TableRow key={medicamentoRow.id_medicamento}>
+                  {row.medicamentos.map((medicamentoRow, index) => (
+                    <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {medicamentoRow.id_medicamento}
                       </TableCell>
@@ -121,11 +101,7 @@ Row.propTypes = {
   }).isRequired,
 };
 
-const rows = [
-  createData("Receta 1", "Pepe", "1.111.111-1", "Tomar cada 10 hr","111222333"),
-  createData("Receta 2", "Pepe2", "2.111.111-1", "Tomar 1 hr","444555666"),
-  createData("Receta 3", "Pepe3", "3.111.111-1", "Tomar cada 15 hr","777888999")
-]
+const rows = prescripciones
 
 export default function CollapsibleTable() {
   return (
@@ -139,8 +115,8 @@ export default function CollapsibleTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
+          {rows.map((row, index) => (
+            <Row key={index} row={row} />
           ))}
         </TableBody>
       </Table>

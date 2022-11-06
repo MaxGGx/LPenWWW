@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import BasicSelect from './formularioPrescripciones';
 
 const style = {
   position: 'absolute',
@@ -31,16 +32,7 @@ export default function BasicModal() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-
-          <Typography id="modal-modal-title" variant="h5" component="h2">
-            Datos de receta
-          </Typography>
-            <Typography variant="h6" gutterBottom component="div">
-                Datos de receta
-            </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Datos del paciente
-          </Typography>
+          <BasicSelect />
         </Box>
       </Modal>
     </div>
