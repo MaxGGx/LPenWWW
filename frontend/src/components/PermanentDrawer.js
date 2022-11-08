@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import { Outlet, NavLink, Link, useMatch, useNavigate } from 'react-router-dom';
+import useAuth from "../hooks/useAuth";
 import _ from 'lodash';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
@@ -18,27 +19,47 @@ import MailIcon from '@mui/icons-material/Mail';
 
 import logo from '../assets/imgs/mogus.png'
 
-const items = [
-  {
-    uid: 1,
-    text: 'Prescripciones',
-    icon: <InboxIcon />,
-    paths: ['/prescripciones'],
-    visible: true,
-  },
-  {
-    uid: 2,
-    text: 'Stock',
-    icon: <MailIcon />,
-    paths: ['/stock'],
-    visible: true,
-  },
-];
-
-
-
 const PermanentDrawer = ({drawerWidth, children}) => {
-  
+  const { auth } = useAuth();
+  let items = []
+
+  if (auth.tipo === 'farmaceutico') {
+    items = [
+      {
+        uid: 1,
+        text: 'Prescripciones',
+        icon: <InboxIcon />,
+        paths: ['/prescripciones'],
+        visible: true,
+      },
+      {
+        uid: 2,
+        text: 'Stock',
+        icon: <MailIcon />,
+        paths: ['/stock'],
+        visible: true,
+      },
+    ];
+  }
+  else {
+    items = [
+      {
+        uid: 1,
+        text: 'Prescripciones',
+        icon: <InboxIcon />,
+        paths: ['/prescripciones'],
+        visible: true,
+      },
+      {
+        uid: 2,
+        text: 'Stock',
+        icon: <MailIcon />,
+        paths: ['/stock'],
+        visible: true,
+      },
+    ];
+  }
+
   let seccionActual = 'Pagina no encontrada';
   const drawer = (
     <>

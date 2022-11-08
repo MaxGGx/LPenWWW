@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import useAuth from "../hooks/useAuth";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, TextField, Typography,
-  FormControl, MenuItem, Select, InputLabel
+  FormControl, MenuItem, Select, InputLabel,
+  Alert,
 } from "@mui/material";
 import data_login from "../mocking/data_login";
 import axios from "../api/axios";
@@ -19,14 +20,20 @@ const Login = () => {
   const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const [tipo, setTipo] = useState('medico');
+  const [correct, setCorrect] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (data_login.some(usuario => (usuario.tipo === tipo && usuario.nombre === user && usuario.pass === pwd))){
-        setAuth({user, pwd}); // Agregar Rol (Médico, Farmacéutico) de ser necesario
-        console.log(user, pwd);
+        setAuth({user, pwd, tipo});
+        setCorrect(true);
+        setError(false);
         navigate(from, { replace: true });
+      } else {
+        setCorrect(false);
+        setError(true);
       }
     } catch (e) {
       console.log(e);
@@ -84,6 +91,16 @@ const Login = () => {
             onChange={(e) => setPwd(e.target.value)}
           />
           <Button type="submit" sx={{marginTop: 0.5, borderRadius: 1}} variant="contained" color="primary" >Login</Button>
+          {correct && (
+              <Alert severity="success">
+                Sesión Iniciada
+              </Alert>
+            )}
+            {error && (
+              <Alert severity="error">
+                Usuario o Contraseña Incorrecta
+              </Alert>
+            )}
         </Box>
         {/* <label htmlFor="username">Username:</label>
         <input
