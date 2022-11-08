@@ -35,7 +35,10 @@ function Row(props){
           </IconButton>
         </TableCell>
         <TableCell scope="row">
-        <DescriptionIcon>DescriptionIcon</DescriptionIcon> {row.name_prescripcion}
+          <>
+            <DescriptionIcon>DescriptionIcon</DescriptionIcon> {row.name_prescripcion}
+            <Typography>Paciente: {row.nombrePaciente} - Rut: {row.rutPaciente}</Typography>
+          </>
         </TableCell>
       </TableRow>
       <TableRow>
