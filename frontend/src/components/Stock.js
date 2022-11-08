@@ -7,7 +7,6 @@ import {
   Dialog, DialogTitle, DialogContent,
   DialogContentText, DialogActions
 } from '@mui/material';
-import _ from 'lodash'
 import stock from '../mocking/data_stock';
 
 const Stock = () => {
@@ -15,18 +14,6 @@ const Stock = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [current, setCurrent] = useState({individuales: []});
 
-  const handleCaducar = () => {
-    console.log('caducar')
-    handleCloseDialog();
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const handleClickActive = () => {
-    setOpenDialog(true);
-  };
   const handleClose = () => {
     setModalDetailVisble(false);
   };
@@ -38,8 +25,17 @@ const Stock = () => {
     handleOpen();
   };
 
-  const ModalStock = () => {
-
+  const handleVerCaducar = () => {
+    setOpenDialog(true);
+  }
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+  const handleCaducar = () => {
+    handleCloseDialog();
+  };
+  
+  const ModalStock = () => {  
     const setDetailRows = (rows) => {
       const newRows = [];
       for (let row_index = 0; row_index < rows.length; row_index++) {
@@ -56,10 +52,6 @@ const Stock = () => {
       return newRows;
     };
 
-    const handleVerCaducar = (row) => {
-      setOpenDialog(true);
-    }
-
     const detailColumns = [
       { field: 'partida', headerName: 'id partida', flex: 1},
       { field: 'fechaIngreso', headerName: 'Fecha de ingreso', flex: 1},
@@ -74,7 +66,7 @@ const Stock = () => {
             <Button
               variant="contained"
               sx={{ m: 1 }}
-              onClick={() => handleVerCaducar(row)}
+              onClick={() => handleVerCaducar()}
             >
               <Typography
                 variant="button"
@@ -125,7 +117,7 @@ const Stock = () => {
                 <DialogActions>
                   <Button
                     variant="contained"
-                    onClick={handleCaducar()}
+                    onClick={handleCaducar}
                   >
                     <Typography>
                       Caducar
