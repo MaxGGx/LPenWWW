@@ -24,32 +24,32 @@ const stock = [
   {
     id: '2',
     partida: '26',
-    nombre: 'Paracetamol 2',
+    nombre: 'Zival',
     descripcion: 'descripcionn',
-    cantidad: '321',
+    cantidad: '0',
     individuales: [
       {
         id: '3',
         partida: '25',
         fechaIngreso: '06-11-2022',
         fechaVencimiento: '25-12-2023',
-        cantidad: '10',
+        cantidad: '0',
       },
       {
         id: '4',
         partida: '30',
         fechaIngreso: '08-11-2022',
         fechaVencimiento: '29-12-2023',
-        cantidad: '10',
+        cantidad: '0',
       },
     ],
   },
   {
     id: '3',
     partida: '27',
-    nombre: 'Paracetamol 3',
+    nombre: 'Bion 3',
     descripcion: 'descripcionn',
-    cantidad: '321',
+    cantidad: '32',
     individuales: [
       {
         id: '5',
@@ -70,9 +70,9 @@ const stock = [
   {
     id: '4',
     partida: '28',
-    nombre: 'Paracetamol 4',
+    nombre: 'Antialergico',
     descripcion: 'descripcionn',
-    cantidad: '321',
+    cantidad: '320',
     individuales: [
       {
         id: '7',
@@ -90,6 +90,51 @@ const stock = [
       },
     ],
   },
+  {
+    id: '5',
+    partida: '29',
+    nombre: 'Vitamina C',
+    descripcion: 'descripcionn',
+    cantidad: '31',
+    individuales: [
+      {
+        id: '9',
+        partida: '25',
+        fechaIngreso: '06-11-2022',
+        fechaVencimiento: '25-12-2023',
+        cantidad: '10',
+      },
+      {
+        id: '10',
+        partida: '30',
+        fechaIngreso: '08-11-2022',
+        fechaVencimiento: '29-12-2023',
+        cantidad: '10',
+      },
+    ],
+  },{
+    id: '6',
+    partida: '28',
+    nombre: 'Cetrizina',
+    descripcion: 'descripcionn',
+    cantidad: '260',
+    individuales: [
+      {
+        id: '11',
+        partida: '25',
+        fechaIngreso: '06-11-2022',
+        fechaVencimiento: '25-12-2023',
+        cantidad: '10',
+      },
+      {
+        id: '12',
+        partida: '30',
+        fechaIngreso: '08-11-2022',
+        fechaVencimiento: '29-12-2023',
+        cantidad: '10',
+      },
+    ],
+  }
 ]
 
 export default stock;

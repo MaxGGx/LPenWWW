@@ -1,4 +1,3 @@
-
 const prescripciones = [
     {
         name_prescripcion: "Prescripcion 1",
@@ -9,7 +8,8 @@ const prescripciones = [
             {
                 nombre_medicamento:"Zival",
                 id_medicamento: "11222",
-                cantidad: "500"
+                cantidad: "500",
+                estado: "Entregado",
             }
         ]
     },
@@ -20,14 +20,17 @@ const prescripciones = [
         descripcion: "Tomar remedios cada y hrs",
         medicamentos: [
             {
-                nombre_medicamento:"Zival2",
-                id_medicamento: "11222333",
-                cantidad: "50"
+                nombre_medicamento:"Zival",
+                id_medicamento: "11222",
+                cantidad: "50",
+                estado: "No Entregado",
+                
             },
             {
                 nombre_medicamento:"Bion 3",
                 id_medicamento: "11222333",
-                cantidad: "5"
+                cantidad: "5",
+                estado: "No entregado",
             }
         ]
     },
@@ -40,7 +43,8 @@ const prescripciones = [
             {
                 nombre_medicamento:"Paracetamol",
                 id_medicamento: "11222",
-                cantidad: "50"
+                cantidad: "50",
+                estado: "Entregado",
             }
         ]
     },
@@ -53,12 +57,14 @@ const prescripciones = [
             {
                 nombre_medicamento:"Antialergico",
                 id_medicamento: "11222",
-                cantidad: "500"
+                cantidad: "500",
+                estado: "Entregado",
             },
             {
                 nombre_medicamento:"Paracetamol",
                 id_medicamento: "11222",
-                cantidad: "500"
+                cantidad: "500",
+                estado: "Entregado",
             }
         ]
     },
@@ -71,17 +77,14 @@ const prescripciones = [
             {
                 nombre_medicamento:"Vitamina C",
                 id_medicamento: "11222",
-                cantidad: "500"
+                cantidad: "500",
+                estado: "Entregado",
             },
             {
                 nombre_medicamento:"Cetrizina",
                 id_medicamento: "11222",
-                cantidad: "500"
-            },
-            {
-                nombre_medicamento:"Tensoliv",
-                id_medicamento: "11222",
-                cantidad: "500"
+                cantidad: "500",
+                estado: "Entregado",
             }
         ]
     }
