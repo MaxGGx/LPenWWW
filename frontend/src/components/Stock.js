@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid'
-
+import useAuth from "../hooks/useAuth";
 import {
-  Modal, Box, Collapse, IconButton,
-  Button, Typography, Card, Stack,
+  Modal, Box,
+  Button, Typography,
   Dialog, DialogTitle, DialogContent,
-  DialogContentText, DialogActions
+  DialogContentText, DialogActions, TextField
 } from '@mui/material';
 import stock from '../mocking/data_stock';
 
 const Stock = () => {
+  const { auth } = useAuth();
   const [modalDetailVisble, setModalDetailVisble] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [current, setCurrent] = useState({individuales: []});
@@ -63,6 +64,7 @@ const Stock = () => {
         flex: 1,
         renderCell: ({ row }) => (
           <div>
+            {auth.tipo === 'farmaceutico' &&
             <Button
               variant="contained"
               sx={{ m: 1 }}
@@ -75,6 +77,7 @@ const Stock = () => {
                 Caducar
               </Typography>
             </Button>
+            }
           </div>
         ),
       },
@@ -111,8 +114,18 @@ const Stock = () => {
                 </DialogTitle>
                 <DialogContent>
                   <DialogContentText id="alert-dialog-description">
-                    ¿Desea eliminar a este medicamento?
+                    ¿Desea caducar este medicamento?
                   </DialogContentText>
+                  <TextField
+                    required={true}
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Razón de caducidad"
+                    type="text"
+                    fullWidth
+                    variant="standard"
+                  />
                 </DialogContent>
                 <DialogActions>
                   <Button

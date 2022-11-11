@@ -6,7 +6,7 @@ import {
   Outlet,
 } from 'react-router-dom';
 import RequireAuth from './components/RequireAuth';
-import Login from "./components/Login copy";
+import Login from "./components/Login";
 import Layout from './layout/Layout';
 //import Prescripciones from  './components/Prescripciones'
 import Stock from './components/Stock';
