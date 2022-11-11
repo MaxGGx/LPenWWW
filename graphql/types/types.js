@@ -37,6 +37,7 @@ type Paciente{
 
 type MedicamentoStock{
     id: ID!
+    nombre: String!
     codigo: String!
     descripcion: String!
     caducidad: String!
@@ -51,6 +52,7 @@ type Receta{
     descripcion: String!
     entregado: Boolean!
     fechaEmision: String!
+    periodosRetiro: [String]
 }
 
 type MedicamentoReservado{
@@ -86,9 +88,17 @@ type Alert{
     message: String
 }
 
+type AuthData {
+    userId: ID!
+    token: String!
+    tokenExpiration: Int!
+}
+
 type Query {
+    getMedicamentosStock: [MedicamentoStock]
+    getMedicamentoStock(id: ID!): MedicamentoStock
     getRecetas: [Receta]
-    getReceta(id: ID!): [Receta]
+    getReceta(id: ID!): Receta
     getMedicos: [Medico]
     getMedico(id: ID!): Medico
     getPacientes: [Paciente]
@@ -101,6 +111,18 @@ type Query {
     getContraindicacion(id: ID!): Contraindicacion
     getMedicamentosReservados: [MedicamentoReservado]
     getMedicamentoReservado(id: ID!): MedicamentoReservado
+
+    login(email: String!, pass: String!, tipo: String!): AuthData!
+    getReservados(nombre: String!): [Int!]
+}
+
+input MedicamentoStockInput{
+    nombre: String!
+    codigo: String!
+    descripcion: String!
+    caducidad: String!
+    fechaingreso: String!
+    partida: String!
 }
 
 input RecetaInput{
@@ -109,6 +131,7 @@ input RecetaInput{
     descripcion: String!
     entregado: Boolean!
     fechaEmision: String!
+    periodosRetiro: [String]
 }
 
 input MedicoInput {
@@ -135,6 +158,7 @@ input RegistroInput {
     rutRetira: String!
     receta: String!
     fechaRetiro: String
+    medicamentosRechazados:[String]!
 }
 
 input MermaInput{
@@ -167,8 +191,18 @@ input FarmaceuticoInput{
     registros: [String]
 }
 
+input CaducarMedicamentoInput{
+    id: String!
+    razon: String!
+}
+input FiltrarMedicamentosInput{
+    id: [String!]!
+}
 
 type Mutation{
+    addMedicamentoStock(input: MedicamentoStockInput): MedicamentoStock
+    updateMedicamentoStock(id: ID!, input: MedicamentoStockInput) : MedicamentoStock
+    deleteMedicamentoStock(id: ID!): Alert
     addReceta(input: RecetaInput): Receta
     updateReceta(id: ID!, input: RecetaInput) : Receta
     deleteReceta(id: ID!): Alert
@@ -188,11 +222,17 @@ type Mutation{
     updateContraindicacion(id: ID!, input: ContraindicacionInput) : Contraindicacion
     deleteContraindicacion(id: ID!): Alert
     addMedicamentoReservado(input: MedicamentoReservadoInput): MedicamentoReservado
+
+    addLoteMedicamentos(datos_medicamento: MedicamentoReservadoInput, cantidad: Int!) : [MedicamentoReservado]
+    assignReservaMedicamento(objeto_medicamento: MedicamentoStockInput, id_medicamento_reservado: Int!) : Int!
+
     updateMedicamentoReservado(id: ID!, input: MedicamentoReservadoInput) : MedicamentoReservado
     deleteMedicamentoReservado(id: ID!): Alert
     addFarmaceutico(input: FarmaceuticoInput): Farmaceutico
     updateFarmaceutico(id: ID!, input: FarmaceuticoInput) : Farmaceutico
     deleteFarmaceutico(id: ID!): Alert
+    caducarMedicamento(input: CaducarMedicamentoInput) : Alert
+    filtrarMedicamentos(input: FiltrarMedicamentosInput) : Alert
 }
 
 `;

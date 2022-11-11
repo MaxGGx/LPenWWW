@@ -5,6 +5,7 @@ const cors = require("cors");
 const {ApolloServer, gql} = require("apollo-server-express");
 const {merge} = require("lodash");
 const typeDefs = require("./types/types")
+const JWT = require('jsonwebtoken');
 
 const MedicamentoReservado = require("./models/medicamentoReservado");
 const Receta = require("./models/receta");
@@ -14,6 +15,8 @@ const Merma = require("./models/medicamentoMerma");
 const Medico = require("./models/medico");
 const Farmaceutico = require("./models/farmaceutico");
 const Paciente = require("./models/paciente");
+const MedicamentoStock = require("./models/medicamentoStock");
+const medicamentoMerma = require("./models/medicamentoMerma");
 
 mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.net/test', {useNewUrlParser:true, useUnifiedTopology:true});
 
@@ -21,6 +24,14 @@ mongoose.connect('mongodb+srv://MaxX_X:HdrMD9UJhZyate6@cluster0.gi49kts.mongodb.
 
 const resolvers = {
     Query: {
+        async getMedicamentosStock(obj){
+            const medicamentos= await MedicamentoStock.find();
+            return medicamentos
+        },
+        async getMedicamentoStock(obj,{id}){
+            const medicamentos= await MedicamentoStock.findById(id)
+            return medicamentos
+        },
         async getRecetas(obj){
             const recetas= await Receta.find();
             return recetas
@@ -76,9 +87,56 @@ const resolvers = {
         async getMedicamentoReservado(obj,{id}){
             const medicamentosr= await MedicamentoReservado.findById(id)
             return medicamentosr
+        },
+
+        async login(obj,{email, pass, tipo}){
+            let user = null;
+            switch (tipo) {
+                case "medico":
+                    user = await Medico.findOne({email: email});
+                    break;
+                case "paciente":
+                    user = await Paciente.findOne({email: email});
+                    break;
+                case "farmaceutico":
+                    user = await Farmaceutico.findOne({email: email});
+                    break;    
+                default:
+                    break;
+            }
+            if(!user){
+                throw new Error(tipo + ' con correo ' + email + 'no existe.');
+            }
+            if(pass != user.pass){
+                throw new Error('Contraseña incorrecta.');
+            }
+            const token = JWT.sign({userId: user.id, email: user.email}, 'clavesupersecreta', {
+                expiresIn: '1h'
+            });
+            return {userId: user.id, token: token, tokenExpiration: 1}
+        },
+
+        async getReservados(obj, {nombre_medicamento}){
+            const IDs = await MedicamentoReservado.find({nombre: nombre_medicamento, available: 0});
+            return IDs;
         }
     },
     Mutation: {
+        async addMedicamentoStock(obj, {input}){
+            const medicamentoStock = new MedicamentoStock(input);
+            await medicamentoStock.save();
+            return medicamentoStock;
+        },
+        async updateMedicamentoStock(obj, {id, input}){
+            const medicamentoStock = await MedicamentoStock.findByIdAndUpdate(id, input);
+            return medicamentoStock;
+        },
+        async deleteMedicamentoStock(obj, {id}){
+            await MedicamentoStock.deleteOne({_id: id});
+            return {
+                message: "MedicamentoStock eliminado"
+            }
+        },
         async addReceta(obj, {input}){
             const receta = new Receta(input);
             await receta.save();
@@ -189,6 +247,21 @@ const resolvers = {
             await medicamentor.save();
             return medicamentor;
         },
+
+        async addLoteMedicamentos(obj, {datos_medicamento, cantidad}){
+            for (let step = 0; step < cantidad; step++) {
+                this.addMedicamentoStock(datos_medicamento);
+            }
+            const reservas = await this.getReservados(datos_medicamento.nombre);
+            datos_medicamento["available"] = 0;
+            let disponibles = cantidad;
+            for(let id of reservas){
+                this.updateMedicamentoReservado(id, datos_medicamento);
+                disponibles--
+                if (!disponibles) break;
+            }
+        },
+
         async updateMedicamentoReservado(obj, {id, input}){
             const medicamentor = await MedicamentoReservado.findByIdAndUpdate(id, input);
             return medicamentor;
@@ -198,7 +271,67 @@ const resolvers = {
             return {
                 message: "Medicamento en reserva eliminado"
             }
+        },
+        async caducarMedicamento(obj, {id, razon}){
+            try {
+                const medicamento = await MedicamentoStock.findById(id);
+                const newMedicamento = {
+                    nombre: medicamento.nombre,
+                    codigo: medicamento.codigo,
+                    descripcion: razon,
+                    caducidad: medicamento.caducidad,
+                    fechaingreso: medicamento.fechaingreso,
+                    partida: medicamento.partida,
+                }
+                const merma = new medicamentoMerma(newMedicamento)
+                await merma.save();
+                await medicamento.deleteOne({_id: id});
+                return {
+                    message: "Medicamento satisfactoriamente marcado como Merma."
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            
+        },
+        async filtrarMedicamentos(obj, {id_list}){
+            try {
+                for (let i = 0; i < id_list.length; i++) {
+                    const id_medicamento = array[i];
+                    const medicamento = await MedicamentoStock.findById(id_medicamento);
+                    const expirationDate = new Date(medicamento.caducidad);
+                    if (expirationDate.getTime() >= Date.now().getTime()){
+                        await this.caducarMedicamento({}, {id, razon: 'caduco'})
+                    }
+                }
+                return {
+                    message: "Medicamentos filtrados satisfactoriamente."
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            
+        },
+        /*
+        QUEDA CASI LISTA, HAY QUE CONSULTAR CON EL PROFE PORQUE NO DEJA IMPORTAR NODEMAILER NI
+        CREAR EL TRIGGER...
+        async makeRecordatorioRecetas(){
+            recetas = getRecetas()
+            const date = new Date();
+            let day = date.getDate();
+            let month = date.getMonth() + 1;
+            let year = date.getFullYear();
+            let currentDate = `${day}-${month}-${year}`;
+            for(let i = 0; i<recetas.length; i++){
+                recetas[i].periodosRetiro
+                for(let j = 0; j<recetas[i].periodosRetiro; j++){
+                    if(recetas[i].periodosRetiro[j][0].split(":") == currentDate){
+                        //Enviar aviso con nodemailer
+                    }
+                }
+            }
         }
+        */
     }
 }
 
