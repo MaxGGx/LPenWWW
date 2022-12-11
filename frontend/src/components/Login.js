@@ -5,10 +5,8 @@ import { Box, Button, TextField, Typography,
   FormControl, MenuItem, Select, InputLabel,
   Alert,
 } from "@mui/material";
-import data_login from "../mocking/data_login";
+// import data_login from "../mocking/data_login";
 import axios from "../api/axios";
-
-const LOGIN_URL = '/login';
 
 const Login = () => {
   const { setAuth } = useAuth();
@@ -25,35 +23,44 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (data_login.some(usuario => (usuario.tipo === tipo && usuario.nombre === user && usuario.pass === pwd))){
-        setAuth({user, pwd, tipo});
-        setCorrect(true);
-        setError(false);
-        navigate(from, { replace: true });
-      } else {
-        setCorrect(false);
-        setError(true);
-      }
-    } catch (e) {
-      console.log(e);
-    }
     // try {
-    //   const response = await axios.post(LOGIN_URL, // Axios hace un POST al "backend" para validar las credenciales
-    //     JSON.stringify({user:user, password:pwd}),
-    //     {
-    //       headers: {'Content-Type': 'application/json'},
-    //       withCredentials: true
-    //     }
-    //   );
-    //   console.log(JSON.stringify(response?.data));
-    //   const accessToken = response?.data?.accessToken;
-    //   const roles = response?.data?.roles; //Aquí se obtiene el rol de médico o farmaceutico
-    //   setAuth({user, pwd, roles, accessToken});
-    //   console.log(user, pwd);
-    // } catch (error) {
-    //   //algo
+    //   if (data_login.some(usuario => (usuario.tipo === tipo && usuario.nombre === user && usuario.pass === pwd))){
+    //     setAuth({user, pwd, tipo});
+    //     setCorrect(true);
+    //     setError(false);
+    //     navigate(from, { replace: true });
+    //   } else {
+    //     setCorrect(false);
+    //     setError(true);
+    //   }
+    // } catch (e) {
+    //   console.log(e);
     // }
+    try {
+      const response = await axios.post('http://localhost:8090/graphql', // Axios hace un POST al "backend" para validar las credenciales
+        {
+          query: `
+          query login{
+            login(email: "${user}", pass: "${pwd}", tipo: "${tipo}") {
+              userId
+              token
+              tokenExpiration
+            }
+          }
+          `
+        },
+        {
+          headers: {'Content-Type': 'application/json'},
+          withCredentials: true
+        }
+      );
+      console.log(JSON.stringify(response?.data));
+      const token = response?.data?.token;
+      setAuth({user, pwd, token});
+      console.log(user, pwd);
+    } catch (error) {
+      //algo
+    }
   }
 
   return (
