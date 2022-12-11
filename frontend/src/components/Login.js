@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -5,6 +6,7 @@ import { Box, Button, TextField, Typography,
   FormControl, MenuItem, Select, InputLabel,
   Alert,
 } from "@mui/material";
+import {useQuery, gql} from '@apollo/client';
 // import data_login from "../mocking/data_login";
 import axios from "../api/axios";
 
@@ -23,6 +25,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    /* Versión mock data */
     // try {
     //   if (data_login.some(usuario => (usuario.tipo === tipo && usuario.nombre === user && usuario.pass === pwd))){
     //     setAuth({user, pwd, tipo});
@@ -36,31 +39,72 @@ const Login = () => {
     // } catch (e) {
     //   console.log(e);
     // }
-    try {
-      const response = await axios.post('http://localhost:8090/graphql', // Axios hace un POST al "backend" para validar las credenciales
-        {
-          query: `
-          query login{
-            login(email: "${user}", pass: "${pwd}", tipo: "${tipo}") {
-              userId
-              token
-              tokenExpiration
-            }
+
+    /* Versión Axios */
+    // try {
+    //   const response = await axios.post('http://localhost:8090/graphql', // Axios hace un POST al "backend" para validar las credenciales
+    //     {
+    //       query: `
+    //       query login{
+    //         login(email: "${user}", pass: "${pwd}", tipo: "${tipo}") {
+    //           userId
+    //           token
+    //           tokenExpiration
+    //         }
+    //       }
+    //       `
+    //     },
+    //     {
+    //       headers: {'Content-Type': 'application/json'},
+    //       withCredentials: true
+    //     }
+    //   );
+    //   console.log(JSON.stringify(response?.data));
+    //   const token = response?.data?.token;
+    //   setAuth({user, pwd, token});
+    //   console.log(user, pwd);
+    // } catch (error) {
+    //   //algo
+    // }
+
+    /* Versión fetch */
+    const requestBody = {
+      query:`query login{
+          login(email: "${user}", pass: "${pwd}", tipo: "${tipo}") {
+            userId
+            token
+            tokenExpiration
           }
-          `
-        },
-        {
-          headers: {'Content-Type': 'application/json'},
-          withCredentials: true
         }
-      );
-      console.log(JSON.stringify(response?.data));
-      const token = response?.data?.token;
-      setAuth({user, pwd, token});
-      console.log(user, pwd);
-    } catch (error) {
-      //algo
+      `
     }
+    await fetch('http://localhost:8090/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(result => {
+      if (result.ok){
+        return result.json();
+      }
+      setCorrect(false);
+      setError(true);
+      throw new Error('Something went wrong');
+    })
+    .then(data => {
+      const token = data.token;
+
+      setAuth({user, pwd, token});
+      console.log("Login correcto");
+      setCorrect(true);
+      setError(false);
+      navigate(from, { replace: true });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   return (
@@ -109,23 +153,6 @@ const Login = () => {
               </Alert>
             )}
         </Box>
-        {/* <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          name="Username"
-          value={user}
-          required
-          onChange={(e) => setUser(e.target.value)}
-        />
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          name="Password"
-          value={pwd}
-          required
-          onChange={(e) => setPwd(e.target.value)}
-        />
-        <button>Sign In</button> */}
       </form>
     </div>
   )
