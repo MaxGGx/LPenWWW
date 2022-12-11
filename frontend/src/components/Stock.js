@@ -8,12 +8,41 @@ import {
   DialogContentText, DialogActions, TextField
 } from '@mui/material';
 import stock from '../mocking/data_stock';
+import {useQuery, useMutation, gql} from '@apollo/client';
+import axios from 'axios';
+
+const GET_MEDICAMENTOS_STOCK = `
+  query getMedicamentosStock {
+   getMedicamentosStock {
+      id
+      nombre
+      codigo
+      descripcion
+      caducidad
+      fechaingreso
+      partida
+    }
+  }
+`;
 
 const Stock = () => {
   const { auth } = useAuth();
   const [modalDetailVisble, setModalDetailVisble] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [current, setCurrent] = useState({individuales: []});
+  const [data, setData] = useState([]);
+
+  useEffect (() => {
+    const fetchData = async () => {
+      const queryData = await axios.post('http://localhost:8090/graphql', {
+        query: GET_MEDICAMENTOS_STOCK
+      });
+      const result = queryData.data.data.getMedicamentosStock;
+      console.log(result);
+      setData(result);
+    };
+    fetchData();
+  }, [])
 
   const handleClose = () => {
     setModalDetailVisble(false);
@@ -199,7 +228,7 @@ const Stock = () => {
   return (
     <div style={{ width: '100%' }}>
       <ModalStock />
-      <DataGrid rows={setRows(stock)} columns={columns} autoHeight hideFooter />
+      <DataGrid rows={setRows(data)} columns={columns} autoHeight hideFooter />
     </div>
   );
 }
