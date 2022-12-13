@@ -96,7 +96,7 @@ const Login = () => {
       console.log(data);
       if(data.data){
         const token = data.token;
-        setAuth({user, pwd, token});
+        setAuth({user, pwd, token, tipo});
         console.log("Login correcto");
         setCorrect(true);
         setError(false);

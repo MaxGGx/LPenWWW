@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const recetaSchema = new mongoose.Schema({
-    medico: {type: mongoose.Types.ObjectId, ref: 'Medico'},
+    medico: String/*type: mongoose.Types.ObjectId, ref: 'Medico'*/,
     remedios: [String],
-    paciente: {type: mongoose.Types.ObjectId, ref: 'Paciente'},
+    paciente:  String/*type: mongoose.Types.ObjectId, ref: 'Paciente'*/,
     descripcion: String,
     entregado: Boolean,
     fechaEmision: String,
