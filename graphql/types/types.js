@@ -47,8 +47,9 @@ type MedicamentoStock{
 
 type Receta{
     id: ID!
-    medico: Medico!
-    remedios: [MedicamentoStock]!
+    medico: String!
+    remedios: [String]!
+    paciente: String!
     descripcion: String!
     entregado: Boolean!
     fechaEmision: String!
@@ -127,6 +128,7 @@ input MedicamentoStockInput{
 
 input RecetaInput{
     medico: String!
+    paciente: String!
     remedios: [String]!
     descripcion: String!
     entregado: Boolean!

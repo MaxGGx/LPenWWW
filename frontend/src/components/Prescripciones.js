@@ -16,7 +16,52 @@ import PropTypes from 'prop-types'
 import DescriptionIcon from '@mui/icons-material/Description';
 import Button from '@mui/material/Button';
 import BasicModal from './modalPrescripciones';
+import { useEffect } from 'react';
+
 import prescripciones from '../mocking/data_prescripciones';
+
+
+async function handlePreps(){  
+  const requestBody = {
+    query:`query GetRecetas {
+      getRecetas {
+        descripcion,
+        paciente,
+        remedios,
+        entregado
+      }
+    }
+    `
+  }
+  let results = await fetch('http://localhost:8090/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  let data = await results.json();
+  let lista = []
+  for(let i = 0; i<data.data.getRecetas.length; i++){
+    let meds = []
+    let temp = data.data.getRecetas[i].remedios;
+    for(let a = 0; a<temp.length; a++){
+      meds.push({nombre_medicamento: data.data.getRecetas[i].remedios[a].split("-")[0],
+                    id_medicamento: Math.floor(Math.random()*10000),
+                    cantidad: data.data.getRecetas[i].remedios[a].split("-")[1],
+                    estado: "No Entregado"})
+    }
+    
+    lista.push({name_prescripcion: "Prescripcion "+(i+1),
+                nombrePaciente: data.data.getRecetas[i].paciente,
+                rutPaciente: "11.1111.22-1",
+                descripcion: data.data.getRecetas[i].descripcion,
+                medicamentos: meds})
+    }
+  console.log(lista)
+  
+  return lista;
+}
 
 
 function Row(props){
@@ -104,9 +149,16 @@ Row.propTypes = {
   }).isRequired,
 };
 
-const rows = prescripciones
+let rows = prescripciones
+
+
+handlePreps().then((res) => {rows = res;console.log("FUNCO")});
 
 export default function CollapsibleTable() {
+  useEffect(() => {
+    // Update the document title using the browser API
+    handlePreps().then((res) => {rows = res;console.log("FUNCO")});
+  });
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -114,7 +166,7 @@ export default function CollapsibleTable() {
           <TableRow>
             <TableCell />
             <TableCell>Nombre de Receta</TableCell>
-            <TableCell><BasicModal/></TableCell>
+            <TableCell><BasicModal /></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
