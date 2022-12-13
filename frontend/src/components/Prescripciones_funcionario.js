@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from "react";
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -16,13 +17,97 @@ import PropTypes from 'prop-types'
 import DescriptionIcon from '@mui/icons-material/Description';
 import Button from '@mui/material/Button';
 import BasicModal from './modalPrescripciones';
-import prescripciones from '../mocking/data_prescripciones';
-import stock from '../mocking/data_stock';
+import { useEffect } from 'react';
+import axios from 'axios';
 
+import prescripciones from '../mocking/data_prescripciones';
+
+
+
+
+async function handlePreps(){  
+  const requestBody = {
+    query:`query GetRecetas {
+      getRecetas {
+        descripcion,
+        paciente,
+        remedios,
+        entregado
+      }
+    }
+    `
+  }
+  let results = await fetch('http://localhost:8090/graphql', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  let data = await results.json();
+  let lista = []
+  for(let i = 0; i<data.data.getRecetas.length; i++){
+    let meds = []
+    let temp = data.data.getRecetas[i].remedios;
+    for(let a = 0; a<temp.length; a++){
+      meds.push({nombre_medicamento: data.data.getRecetas[i].remedios[a].split("-")[0],
+                    id_medicamento: Math.floor(Math.random()*10000),
+                    cantidad: data.data.getRecetas[i].remedios[a].split("-")[1],
+                    estado: "No Entregado"})
+    }
+    
+    lista.push({name_prescripcion: "Prescripcion "+(i+1),
+                nombrePaciente: data.data.getRecetas[i].paciente,
+                rutPaciente: "11.1111.22-1",
+                descripcion: data.data.getRecetas[i].descripcion,
+                medicamentos: meds})
+    }
+  console.log(lista)
+  
+  return lista;
+}
 
 function Row(props){
-  const row2  = stock;
-  const { row } = props;
+  const [row2, setRow2] = useState([]);
+
+  useEffect (() => {
+    const fetchRow2 = async () => {
+      const queryData = await axios.post('http://localhost:8090/graphql', {
+        query: `query getMedicamentosStock {
+          getMedicamentosStock {
+             id
+             nombre
+             codigo
+             descripcion
+             caducidad
+             fechaingreso
+             partida
+           }
+         }
+        `
+      });
+      const result = queryData.data.data.getMedicamentosStock;
+      console.log(result);
+      setRow2(result);
+    };
+    fetchRow2();
+  }, [])
+  const dicc={}
+  row2.map(x =>{ 
+    const aux = x.nombre;
+    if (aux in dicc) {
+    dicc[aux]=dicc[aux]+1;
+  } else {
+    dicc[aux]=1;
+    }
+  })
+  console.log(dicc);
+
+
+
+
+  const {row}=props
+
   const [open, setOpen] = React.useState(false);
   return (
     <React.Fragment>
@@ -37,7 +122,10 @@ function Row(props){
           </IconButton>
         </TableCell>
         <TableCell scope="row">
-        <DescriptionIcon>DescriptionIcon</DescriptionIcon> {row.name_prescripcion}
+          <>
+            <DescriptionIcon>DescriptionIcon</DescriptionIcon> {row.name_prescripcion}
+            <Typography>Paciente: {row.nombrePaciente} - Rut: {row.rutPaciente}</Typography>
+          </>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -70,15 +158,15 @@ function Row(props){
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.medicamentos.map((medicamentoRow, index) => (
+                {row.medicamentos.map((medicamentoRow, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {medicamentoRow.id_medicamento}
                       </TableCell>
                       <TableCell>{medicamentoRow.nombre_medicamento}</TableCell>
                       <TableCell>{medicamentoRow.estado}</TableCell>
-                      <TableCell>{row2.find(obj => obj.nombre === medicamentoRow.nombre_medicamento).cantidad}</TableCell>
-                      <TableCell align="right">{medicamentoRow.estado === "Entregado"?"":<Button variant="contained"> {row2.find(obj => obj.nombre === medicamentoRow.nombre_medicamento).cantidad<1?"Reservar Medicamento":"Asignar Medicamento"}</Button>}</TableCell>
+                      <TableCell>{dicc[medicamentoRow]}</TableCell>
+                      <TableCell align="right">{medicamentoRow.estado === "Entregado"?"":<Button variant="contained"> {dicc[medicamentoRow]<1?"Reservar Medicamento":"Asignar Medicamento"}</Button>}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -104,12 +192,18 @@ Row.propTypes = {
         cantidad: PropTypes.string.isRequired,
       }),
     ).isRequired
-  }).isRequired
+  }).isRequired,
 };
 
-const rows = prescripciones
+let rows = prescripciones
 
-export default function CollapsibleTable2() {
+handlePreps().then((res) => {rows = res;console.log("FUNCO")});
+
+export default function CollapsibleTable() {
+  useEffect(() => {
+    // Update the document title using the browser API
+    handlePreps().then((res) => {rows = res;console.log("FUNCO")});
+  });
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -117,6 +211,7 @@ export default function CollapsibleTable2() {
           <TableRow>
             <TableCell />
             <TableCell>Nombre de Receta</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -136,5 +231,4 @@ export default function CollapsibleTable2() {
     </Typography>
   );
 }
-
 export default Prescripciones;*/
