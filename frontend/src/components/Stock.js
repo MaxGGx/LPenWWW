@@ -8,6 +8,7 @@ import {
   DialogContentText, DialogActions, TextField
 } from '@mui/material';
 import axios from 'axios';
+import { element } from 'prop-types';
 
 const GET_MEDICAMENTOS_STOCK = `
   query getMedicamentosStock {
@@ -40,13 +41,14 @@ const Stock = () => {
       const newArray = result.map((m) => [m.nombre, m]);
       const newMap = new Map(newArray);
       const iterator = newMap.values();
-      const unique = [...iterator];
+      var unique = [...iterator];
       console.log(unique);
-      const repetitions = [];
+      console.log("---UNIQUES---")
       for (let element_index = 0; element_index < unique.length; element_index++) {
-        const element = unique[element_index];
-        
-      }
+        console.log(unique[element_index])
+        unique[element_index] = [unique[element_index].nombre,result.filter(x => x.nombre == unique[element_index].nombre).length]
+      };
+      console.log(unique)
       setData(unique);
     };
     fetchData();

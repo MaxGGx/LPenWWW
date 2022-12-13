@@ -1,3 +1,5 @@
 
 frontend/yarn.lock
 frontend/venv
+frontend/node_modules
+graphql/node_modules
