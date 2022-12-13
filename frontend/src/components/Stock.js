@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DataGrid } from '@mui/x-data-grid'
 import useAuth from "../hooks/useAuth";
 import {
@@ -8,7 +8,6 @@ import {
   DialogContentText, DialogActions, TextField
 } from '@mui/material';
 import axios from 'axios';
-import { element } from 'prop-types';
 
 const GET_MEDICAMENTOS_STOCK = `
   query getMedicamentosStock {
@@ -30,6 +29,9 @@ const Stock = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [current, setCurrent] = useState({individuales: []});
   const [data, setData] = useState([]);
+  const [currentCounts, setCurrentCounts] = useState([]);
+  const [currentCaducar, setCurrentCaducar] = useState('');
+  const messageRef = useRef(null);
 
   useEffect (() => {
     const fetchData = async () => {
@@ -37,19 +39,21 @@ const Stock = () => {
         query: GET_MEDICAMENTOS_STOCK
       });
       const result = queryData.data.data.getMedicamentosStock;
-      console.log(result);
       const newArray = result.map((m) => [m.nombre, m]);
       const newMap = new Map(newArray);
       const iterator = newMap.values();
-      var unique = [...iterator];
-      console.log(unique);
-      console.log("---UNIQUES---")
+      const unique = [...iterator];
+      let count = []
       for (let element_index = 0; element_index < unique.length; element_index++) {
-        console.log(unique[element_index])
-        unique[element_index] = [unique[element_index].nombre,result.filter(x => x.nombre == unique[element_index].nombre).length]
+        count[element_index] = [unique[element_index].nombre,result.filter(x => x.nombre == unique[element_index].nombre).length]
       };
-      console.log(unique)
+
+      for (let i = 0; i < unique.length; i++) {
+        unique[i].cantidad = count[i][1];
+      };
+
       setData(unique);
+      setCurrentCounts(count);
     };
     fetchData();
   }, [])
@@ -66,7 +70,6 @@ const Stock = () => {
         query: GET_MEDICAMENTOS_STOCK
       });
       const result = queryData.data.data.getMedicamentosStock;
-      console.log("RESULT");
       const filteredResult = result.filter( medicamento => medicamento.nombre === row.nombre);
       console.log(filteredResult);
       setCurrent(filteredResult);
@@ -81,24 +84,46 @@ const Stock = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
-  const handleCaducar = () => {
+  const handleCaducar = async () => {
+    console.log(currentCaducar);
+    console.log(messageRef.current.value);
+    const requestBody = {
+      query: `mutation Mutation($input: CaducarMedicamentoInput) {
+        caducarMedicamento(input: $input) {
+          message,
+        }
+      }`,
+      variables: {
+        input: {
+          "id": currentCaducar,
+          "razon": "caducado"
+        }
+      }
+    }
+    let results = await fetch('http://localhost:8090/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    let data = results.json().message;
+    console.log(data);
     handleCloseDialog();
   };
   
   const ModalStock = () => {  
     const setDetailRows = (rows) => {
-      console.log(" rows");
-      console.log(rows);
       const newRows = [];
       for (let row_index = 0; row_index < rows.length; row_index++) {
         const row = rows[row_index];
         newRows.push({
           id: row.id,
           partida: row.partida,
-          fechaIngreso: row.fechaIngreso,
-          fechaVencimiento: row.fechaVencimiento,
-          cantidad: row.cantidad,
-          accion: 'accionn',
+          fechaIngreso: row.fechaingreso,
+          fechaVencimiento: row.caducidad,
+          cantidad: 1,
+          accion: "accion",
         })
       }
       return newRows;
@@ -119,7 +144,11 @@ const Stock = () => {
             <Button
               variant="contained"
               sx={{ m: 1 }}
-              onClick={() => handleVerCaducar()}
+              onClick={() => {
+                setCurrentCaducar(row.id);
+                handleVerCaducar()
+                }
+              }
             >
               <Typography
                 variant="button"
@@ -169,6 +198,7 @@ const Stock = () => {
                   </DialogContentText>
                   <TextField
                     required={true}
+                    ref={messageRef}
                     autoFocus
                     margin="dense"
                     id="name"
@@ -215,7 +245,7 @@ const Stock = () => {
         descripcion: row.descripcion,
         cantidad: row.cantidad,
         individuales: row.individuales,
-        accion: 'accionn',
+        accion: "accion",
       })
     }
     return newRows;
@@ -250,7 +280,7 @@ const Stock = () => {
   return (
     <div style={{ width: '100%' }}>
       <ModalStock />
-      <DataGrid rows={setRows(data)} columns={columns} autoHeight hideFooter />
+      <DataGrid rows={setRows(data)} columns={columns} getRowId={row =>  row.id} autoHeight hideFooter />
     </div>
   );
 }

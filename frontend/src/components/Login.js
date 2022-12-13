@@ -93,13 +93,18 @@ const Login = () => {
       throw new Error('Something went wrong');
     })
     .then(data => {
-      const token = data.token;
-
-      setAuth({user, pwd, token});
-      console.log("Login correcto");
-      setCorrect(true);
-      setError(false);
-      navigate(from, { replace: true });
+      console.log(data);
+      if(data.data){
+        const token = data.token;
+        setAuth({user, pwd, token});
+        console.log("Login correcto");
+        setCorrect(true);
+        setError(false);
+        navigate(from, { replace: true });
+      }
+      else{
+        console.log(data.errors[0].message);
+      }
     })
     .catch((error) => {
       console.log(error);
