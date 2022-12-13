@@ -6,9 +6,8 @@ import { Box, Button, TextField, Typography,
   FormControl, MenuItem, Select, InputLabel,
   Alert,
 } from "@mui/material";
-import {useQuery, gql} from '@apollo/client';
+//import {useQuery, gql} from '@apollo/client';
 // import data_login from "../mocking/data_login";
-import axios from "../api/axios";
 
 const Login = () => {
   const { setAuth } = useAuth();

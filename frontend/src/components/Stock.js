@@ -7,8 +7,6 @@ import {
   Dialog, DialogTitle, DialogContent,
   DialogContentText, DialogActions, TextField
 } from '@mui/material';
-import stock from '../mocking/data_stock';
-import {useQuery, useMutation, gql} from '@apollo/client';
 import axios from 'axios';
 
 const GET_MEDICAMENTOS_STOCK = `
@@ -39,7 +37,17 @@ const Stock = () => {
       });
       const result = queryData.data.data.getMedicamentosStock;
       console.log(result);
-      setData(result);
+      const newArray = result.map((m) => [m.nombre, m]);
+      const newMap = new Map(newArray);
+      const iterator = newMap.values();
+      const unique = [...iterator];
+      console.log(unique);
+      const repetitions = [];
+      for (let element_index = 0; element_index < unique.length; element_index++) {
+        const element = unique[element_index];
+        
+      }
+      setData(unique);
     };
     fetchData();
   }, [])
@@ -51,7 +59,17 @@ const Stock = () => {
     setModalDetailVisble(true);
   };
   const handleVerDetalles = (row) => {
-    setCurrent(row);
+    const fetchCurrent = async () => {
+      const queryData = await axios.post('http://localhost:8090/graphql', {
+        query: GET_MEDICAMENTOS_STOCK
+      });
+      const result = queryData.data.data.getMedicamentosStock;
+      console.log("RESULT");
+      const filteredResult = result.filter( medicamento => medicamento.nombre === row.nombre);
+      console.log(filteredResult);
+      setCurrent(filteredResult);
+    };
+    fetchCurrent();
     handleOpen();
   };
 
@@ -67,6 +85,8 @@ const Stock = () => {
   
   const ModalStock = () => {  
     const setDetailRows = (rows) => {
+      console.log(" rows");
+      console.log(rows);
       const newRows = [];
       for (let row_index = 0; row_index < rows.length; row_index++) {
         const row = rows[row_index];
@@ -176,7 +196,7 @@ const Stock = () => {
                   </Button>
                 </DialogActions>
               </Dialog>
-              <DataGrid rows={setDetailRows(current.individuales)} columns={detailColumns} autoHeight hideFooter/>
+              <DataGrid rows={setDetailRows(current)} columns={detailColumns} autoHeight hideFooter/>
             </div>
           </Box>
         </Modal>
